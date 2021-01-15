@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, mainContent, script)">
+    <head>
+        <title th:replace="${title}">UserManager</title>
+        <div th:replace="fragments/head :: head"/>
+    </head>
+    <body>
+        <div th:replace="fragments/navbar :: navbar"/>
+
+        <section>
+            <div th:insert="${mainContent} ?: ~{}">
+            </div>
+        </section>
+
+        <div th:replace="fragments/foot :: foot"/>
+    </body>
+    <script>
+    </script>
+</html>

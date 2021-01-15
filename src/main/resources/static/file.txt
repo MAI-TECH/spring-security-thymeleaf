@@ -1,0 +1,39 @@
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //auth.userDetailsService(customUserDetails).passwordEncoder(bCryptPasswordEncoder);
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // h2 console
+        http.csrf().ignoringAntMatchers("/h2console/**");
+        http.headers().frameOptions().sameOrigin();
+
+        http.authorizeRequests().antMatchers("/signIn", "/signUp").permitAll();
+        http.authorizeRequests().antMatchers("/user/**").hasAnyRole("USER", "ADMIN").anyRequest();
+        http.authorizeRequests().antMatchers("/admin/**").hasAnyRole("ADMIN").anyRequest();
+        http.formLogin().loginPage("/signIn").usernameParameter("username").passwordParameter("password").successHandler(new CustomAuthenticationSuccess()).failureHandler(new CustomAuthenticationFailure()).permitAll();
+        http.logout().permitAll().and().exceptionHandling().accessDeniedPage("/403");
+
+        /*
+        http.csrf().disable();
+        http.formLogin().disable();
+        http.authorizeRequests().antMatchers("/signIn", "/signUp").permitAll();
+        http.authorizeRequests().antMatchers("/user/**").hasAnyRole("USER", "ADMIN").anyRequest();
+        http.authorizeRequests().antMatchers("/admin/**").hasAnyRole("ADMIN").anyRequest();
+        http.formLogin().loginPage("/signIn").failureUrl("/signIn?error=true").defaultSuccessUrl("/admin/home");
+        http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/signOut")).logoutSuccessUrl("/SignIn").and().exceptionHandling().accessDeniedPage("/access-denied");
+         */
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+    }
